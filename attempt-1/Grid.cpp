@@ -186,7 +186,7 @@ void Grid::playGame(int maxIterations)
 
         gameIteration++;
 
-        // Pause (for 150ms) before clearing screen so the grid is visible.
+        // Pause (for 100ms) before clearing screen so the grid is visible.
         Sleep(100);
         system("cls");
 

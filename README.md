@@ -1,5 +1,5 @@
 # game-of-life
-Attempts at implementing Conway's Game of Life
+Attempts at implementing [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
 ## Attempts
 

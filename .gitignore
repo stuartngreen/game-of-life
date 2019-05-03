@@ -61,4 +61,4 @@ typings/
 *.js.map
 
 !bundle.js
-/.vscode
+.vscode/

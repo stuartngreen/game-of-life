@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conway'sGame of Life - TypeScript Version</title>
+    <link href="" rel="stylesheet" />
+    <style>
+        .game-table {
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        .game-table td {
+            height: 6px;
+            padding: 0;
+            width: 6px;
+        }
+
+        .dead-cell {
+            background-color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <p>
+        w:<input id="widthInput" type="text" value="70" />
+        h:<input id="heightInput" type="text" value="70" />
+    </p>
+    <div id="output"></div>
+</body>
+
+<script src="./dist/bundle.js"></script>
+<script>
+    GameOfLife.main();
+</script>
+
+</html>

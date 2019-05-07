@@ -1,9 +1,9 @@
 export class Cell {
 
     constructor(
-        private r: number,
-        private c: number,
-        public isAlive: boolean = false
+        public r: number,
+        public c: number,
+        public isAlive = false
     ) { }
 
 }

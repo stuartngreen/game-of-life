@@ -1,12 +1,12 @@
-import { Cell } from './cell';
+import { Cell } from '../entities/cell';
 
 export class Grid {
 
     private grid: Cell[][] = [];
 
     constructor(
-        private height: number = 10,
-        private width: number = 10
+        public height = 25,
+        public width = 25
     ) {
         this.createGrid();
     }
@@ -14,7 +14,7 @@ export class Grid {
     private createGrid(): void {
 
         for (let r = 0; r < this.height; r++) {
-            
+
             this.grid[r] = [];
 
             for (let c = 0; c < this.width; c++) {
@@ -24,23 +24,30 @@ export class Grid {
 
     }
 
-    // initWithPattern(): void {
+    // setPattern(): void {
 
     // }
 
-    public randomiseGrid(): void {
+    public randomise(): void {
         
         for (let r = 0; r < this.height; r++) {
-
             for (let c = 0; c < this.width; c++) {
                 this.grid[r][c].isAlive = Math.random() >= 0.5;
             }
-
         }
 
     }
 
     public getCell(r: number, c: number): Cell {
-        return this.grid[r][c];
+
+        if (
+            (r > -1 && r < this.height) &&
+            (c > -1 && c < this.width)
+        ) {
+            return this.grid[r][c];
+        }
+        
+        return null;
     }
+
 }

@@ -1,0 +1,20 @@
+body {
+    background-color: #00565e;
+}
+
+.game-table {
+    background-color: #00565e;
+    border-collapse: collapse;
+}
+
+.game-table td {
+    border: 2px solid #00565e;
+    box-sizing: border-box;
+    height: 8px;
+    padding: 0;
+    width: 8px;
+}
+
+.live {
+    background-color: #00eaff;
+}

@@ -13,9 +13,111 @@ exports.Cell = Cell;
 },{}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const cell_1 = require("./cell");
+const game_1 = require("./models/game");
+let iterate;
+function main() {
+    let width = parseInt(document.getElementById('widthInput').value);
+    let height = parseInt(document.getElementById('heightInput').value);
+    let game = new game_1.Game(height, width, 15);
+    startGame(game);
+}
+exports.main = main;
+function buildTableHtml(game) {
+    let table = document.createElement('table');
+    table.setAttribute('class', 'game-table');
+    for (let r = 0; r < game.grid.height; r++) {
+        let tr = document.createElement('tr');
+        for (let c = 0; c < game.grid.width; c++) {
+            let cell = game.grid.getCell(r, c);
+            let td = document.createElement('td');
+            td.setAttribute('id', `row-${r}-col-${c}`);
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+    return table;
+}
+function updateTableHtml(game) {
+    for (let r = 0; r < game.grid.height; r++) {
+        for (let c = 0; c < game.grid.width; c++) {
+            let cell = game.grid.getCell(r, c);
+            let htmlCell = document.getElementById(`row-${r}-col-${c}`);
+            htmlCell.setAttribute('class', cell.isAlive ? 'live' : '');
+        }
+    }
+}
+function stopGame() {
+    clearInterval(iterate);
+}
+function startGame(game) {
+    game.grid.randomise();
+    document.getElementById('output').append(buildTableHtml(game));
+    iterate = setInterval(() => {
+        if (game.currentIteration < game.maxIterations) {
+            updateTableHtml(game);
+            game.nextIteration();
+            game.currentIteration++;
+        }
+        else {
+            stopGame();
+        }
+    }, game.speed);
+}
+
+},{"./models/game":3}],3:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const grid_1 = require("./grid");
+class Game {
+    constructor(height, width, speed = 50, maxIterations = Infinity, currentIteration = 0) {
+        this.speed = speed;
+        this.maxIterations = maxIterations;
+        this.currentIteration = currentIteration;
+        this.grid = new grid_1.Grid(height, width);
+        this.nextGrid = new grid_1.Grid(height, width);
+    }
+    liveNeighbours(cell) {
+        let liveCount = 0;
+        for (let r = cell.r - 1; r <= cell.r + 1; r++) {
+            for (let c = cell.c - 1; c <= cell.c + 1; c++) {
+                let neighbour = this.grid.getCell(r, c);
+                if (neighbour && neighbour.isAlive) {
+                    liveCount++;
+                }
+            }
+        }
+        return cell.isAlive ? liveCount - 1 : liveCount;
+    }
+    switchGrid() {
+        let temp = this.grid;
+        this.grid = this.nextGrid;
+        this.nextGrid = temp;
+    }
+    nextIteration() {
+        for (let r = 0; r < this.grid.height; r++) {
+            for (let c = 0; c < this.grid.width; c++) {
+                let currentCell = this.grid.getCell(r, c);
+                let processCell = this.nextGrid.getCell(r, c);
+                let liveNeighbours = this.liveNeighbours(currentCell);
+                if (currentCell.isAlive) {
+                    processCell.isAlive = liveNeighbours === 2 || liveNeighbours === 3;
+                }
+                else {
+                    processCell.isAlive = liveNeighbours === 3;
+                }
+            }
+        }
+        this.switchGrid();
+    }
+}
+exports.Game = Game;
+
+},{"./grid":4}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cell_1 = require("../entities/cell");
 class Grid {
-    constructor(height = 10, width = 10) {
+    constructor(height = 25, width = 25) {
         this.height = height;
         this.width = width;
         this.grid = [];
@@ -29,7 +131,7 @@ class Grid {
             }
         }
     }
-    randomiseGrid() {
+    randomise() {
         for (let r = 0; r < this.height; r++) {
             for (let c = 0; c < this.width; c++) {
                 this.grid[r][c].isAlive = Math.random() >= 0.5;
@@ -37,71 +139,14 @@ class Grid {
         }
     }
     getCell(r, c) {
-        return this.grid[r][c];
+        if ((r > -1 && r < this.height) &&
+            (c > -1 && c < this.width)) {
+            return this.grid[r][c];
+        }
+        return null;
     }
 }
 exports.Grid = Grid;
 
-},{"./cell":1}],3:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const game_1 = require("./models/game");
-function main() {
-    let width = parseInt(document.getElementById('widthInput').value);
-    let height = parseInt(document.getElementById('heightInput').value);
-    let game = new game_1.Game(width, height);
-    game.randomiseGrid();
-    render(game);
-}
-exports.main = main;
-function render(game) {
-    const div = document.getElementById('output');
-    const table = buildHtmlTable(game);
-    div.innerHTML = '';
-    div.appendChild(table);
-}
-function buildHtmlTable(game) {
-    let table = document.createElement('table');
-    table.setAttribute('class', 'game-table');
-    for (let r = 0; r < game.gridHeight; r++) {
-        let tr = document.createElement('tr');
-        for (let c = 0; c < game.gridWidth; c++) {
-            let cell = game.getGridCell(r, c);
-            let td = document.createElement('td');
-            td.setAttribute('id', `row-${r}-col-${c}`);
-            if (cell.isAlive) {
-                td.setAttribute('class', 'live-cell');
-            }
-            else {
-                td.setAttribute('class', 'dead-cell');
-            }
-            tr.appendChild(td);
-        }
-        table.appendChild(tr);
-    }
-    return table;
-}
-
-},{"./models/game":4}],4:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const grid_1 = require("../entities/grid");
-class Game {
-    constructor(gridHeight, gridWidth, grid = new grid_1.Grid(gridHeight, gridWidth)) {
-        this.gridHeight = gridHeight;
-        this.gridWidth = gridWidth;
-        this.grid = grid;
-    }
-    getGridCell(r, c) {
-        return this.grid.getCell(r, c);
-    }
-    start() {
-    }
-    randomiseGrid() {
-        this.grid.randomiseGrid();
-    }
-}
-exports.Game = Game;
-
-},{"../entities/grid":2}]},{},[3])(3)
+},{"../entities/cell":1}]},{},[2])(2)
 });

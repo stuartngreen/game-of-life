@@ -14,21 +14,35 @@ exports.Cell = Cell;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const game_1 = require("./models/game");
+let game;
 let iterate;
 function main() {
-    let width = parseInt(document.getElementById('widthInput').value);
-    let height = parseInt(document.getElementById('heightInput').value);
-    let game = new game_1.Game(height, width, 15);
-    startGame(game);
+    initGame();
 }
 exports.main = main;
+function initGame() {
+    let outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '';
+    let userInput = getUserInput();
+    game = new game_1.Game(userInput.height, userInput.width, userInput.speed);
+    game.grid.randomise();
+    outputDiv.append(buildTableHtml(game));
+    updateViewHtml(game);
+}
+function getUserInput() {
+    let userInput = {
+        width: parseInt(document.getElementById('widthInput').value),
+        height: parseInt(document.getElementById('heightInput').value),
+        speed: parseInt(document.getElementById('speedInput').value)
+    };
+    return userInput;
+}
 function buildTableHtml(game) {
     let table = document.createElement('table');
     table.setAttribute('class', 'game-table');
     for (let r = 0; r < game.grid.height; r++) {
         let tr = document.createElement('tr');
         for (let c = 0; c < game.grid.width; c++) {
-            let cell = game.grid.getCell(r, c);
             let td = document.createElement('td');
             td.setAttribute('id', `row-${r}-col-${c}`);
             tr.appendChild(td);
@@ -37,32 +51,38 @@ function buildTableHtml(game) {
     }
     return table;
 }
-function updateTableHtml(game) {
+function updateViewHtml(game) {
     for (let r = 0; r < game.grid.height; r++) {
         for (let c = 0; c < game.grid.width; c++) {
             let cell = game.grid.getCell(r, c);
             let htmlCell = document.getElementById(`row-${r}-col-${c}`);
-            htmlCell.setAttribute('class', cell.isAlive ? 'live' : '');
+            htmlCell.setAttribute('class', cell.isAlive ? 'live' : 'dead');
         }
     }
 }
-function stopGame() {
+function pauseGame() {
     clearInterval(iterate);
 }
-function startGame(game) {
-    game.grid.randomise();
-    document.getElementById('output').append(buildTableHtml(game));
+exports.pauseGame = pauseGame;
+function playGame() {
     iterate = setInterval(() => {
         if (game.currentIteration < game.maxIterations) {
-            updateTableHtml(game);
+            updateViewHtml(game);
             game.nextIteration();
             game.currentIteration++;
         }
         else {
-            stopGame();
+            pauseGame();
         }
     }, game.speed);
 }
+exports.playGame = playGame;
+function resetGame() {
+    clearInterval(iterate);
+    game.currentIteration = 0;
+    initGame();
+}
+exports.resetGame = resetGame;
 
 },{"./models/game":3}],3:[function(require,module,exports){
 "use strict";

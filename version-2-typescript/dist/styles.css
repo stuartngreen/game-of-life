@@ -1,5 +1,7 @@
 body {
-  background-color: #00565e; }
+  background-color: #00565e;
+  color: #97c2c6;
+  font-family: 'Rubik', sans-serif; }
 
 .game-table {
   background-color: #00565e;

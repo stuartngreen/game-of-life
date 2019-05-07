@@ -3,6 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Conway's Game of Life - TypeScript Version</title>
+    <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet" />
     <link href="./dist/styles.css" rel="stylesheet" />
 </head>
 
@@ -10,6 +11,10 @@
     <p>
         w:<input id="widthInput" type="text" value="75" />
         h:<input id="heightInput" type="text" value="75" />
+        speed:<input id="speedInput" type="text" value="25" />ms
+        <button onclick="GameOfLife.playGame()">Play</button>
+        <button onclick="GameOfLife.pauseGame()">Pause</button>
+        <button onclick="GameOfLife.resetGame()">Reset</button>
     </p>
     <div id="output"></div>
 </body>

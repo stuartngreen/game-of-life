@@ -1,17 +1,43 @@
 import { Cell } from './entities/cell';
 import { Game } from './models/game';
 
-let iterate: number;
+let game: Game;
+let iterate: number; // Used to pause/play the game.
 
 export function main() {
+    initGame();
+}
 
-    let width = parseInt((<HTMLInputElement>document.getElementById('widthInput')).value);
-    let height = parseInt((<HTMLInputElement>document.getElementById('heightInput')).value);
+function initGame(): void {
 
-    let game: Game = new Game(height, width, 15);
+    let outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '';
+
+    let userInput = getUserInput();
+
+    game = new Game(
+        userInput.height,
+        userInput.width,
+        userInput.speed
+    );
+
+    game.grid.randomise();
+    // game.grid.setPattern();
     
-    startGame(game);
+    outputDiv.append(buildTableHtml(game));
+    updateViewHtml(game);
 
+}
+
+function getUserInput(): any {
+    
+    let userInput = {
+        width: parseInt((<HTMLInputElement>document.getElementById('widthInput')).value),
+        height: parseInt((<HTMLInputElement>document.getElementById('heightInput')).value),
+        speed: parseInt((<HTMLInputElement>document.getElementById('speedInput')).value)
+    };
+    
+    return userInput;
 }
 
 function buildTableHtml(game: Game): HTMLElement {
@@ -25,8 +51,6 @@ function buildTableHtml(game: Game): HTMLElement {
 
         for (let c = 0; c < game.grid.width; c++) {
 
-            let cell: Cell = game.grid.getCell(r, c);
-
             let td = document.createElement('td');
             td.setAttribute('id', `row-${r}-col-${c}`);
             tr.appendChild(td);
@@ -38,7 +62,7 @@ function buildTableHtml(game: Game): HTMLElement {
     return table;
 }
 
-function updateTableHtml(game: Game): void {
+function updateViewHtml(game: Game): void {
     
     for (let r = 0; r < game.grid.height; r++) {
 
@@ -53,27 +77,31 @@ function updateTableHtml(game: Game): void {
 
 }
 
-function stopGame(): void {
+export function pauseGame(): void {
     clearInterval(iterate);
 }
 
-function startGame(game: Game): void {
-
-    game.grid.randomise();
-
-    document.getElementById('output').append(buildTableHtml(game));
+export function playGame(): void {
 
     iterate = setInterval(() => {
 
         if (game.currentIteration < game.maxIterations) {
-            updateTableHtml(game);
+            updateViewHtml(game);
             game.nextIteration();
             game.currentIteration++;
         }
         else {
-            stopGame();
+            pauseGame();
         }
 
     }, game.speed);
 
+}
+
+export function resetGame(): void {
+
+    clearInterval(iterate);
+    game.currentIteration = 0;
+    initGame();
+    
 }

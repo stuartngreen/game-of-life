@@ -5,12 +5,13 @@ export class Grid {
     private grid: Cell[][] = [];
 
     constructor(
-        public height = 25,
-        public width = 25
+        public height: number,
+        public width: number
     ) {
         this.createGrid();
     }
 
+    // Create a randomised grid.
     private createGrid(): void {
 
         for (let r = 0; r < this.height; r++) {
@@ -18,26 +19,13 @@ export class Grid {
             this.grid[r] = [];
 
             for (let c = 0; c < this.width; c++) {
-                this.grid[r][c] = new Cell(r, c);
+                this.grid[r][c] = new Cell(r, c, Math.random() >= 0.5);
             }
         }
 
     }
 
-    // setPattern(): void {
-
-    // }
-
-    public randomise(): void {
-        
-        for (let r = 0; r < this.height; r++) {
-            for (let c = 0; c < this.width; c++) {
-                this.grid[r][c].isAlive = Math.random() >= 0.5;
-            }
-        }
-
-    }
-
+    // Get a cell by row and column.
     public getCell(r: number, c: number): Cell {
 
         if (

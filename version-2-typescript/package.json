@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "game-of-life.js",
   "scripts": {
-    "build": "tsc & browserify ./dist/main.js --s GameOfLife -o ./dist/bundle.js & node-sass assets/scss/ -o dist/",
+    "build": "tsc & browserify ./dist/main.js --s GameOfLife -o ./dist/bundle.js & node-sass assets/scss/styles.scss -o dist/",
     "test": "tsc &  mocha --timeout=5000 ./dist/**/*.test.js",
     "code-coverage": "tsc & nyc --reporter=text mocha --timeout=5000 ./dist/**/*.test.js"
   },

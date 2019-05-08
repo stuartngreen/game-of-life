@@ -10,8 +10,8 @@ export class Game {
         height: number,
         width: number,
         public speed = 50,
-        public maxIterations = Infinity,
-        public currentIteration = 0
+        public currentIteration = 0,
+        public maxIterations = Infinity
     ) {
         this.grid = new Grid(height, width);
         this.nextGrid = new Grid(height, width);

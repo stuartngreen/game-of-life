@@ -1,45 +1,36 @@
 import { Cell } from './entities/cell';
 import { Game } from './models/game';
 
+let defaults = { height: 85, width: 125, speed: 100 };
 let game: Game;
-let iterate: number; // Used to pause/play the game.
+let iterate: number;
+let gameInProgress = false;
 
 export function main() {
+    setDefaults();
     initGame();
 }
 
-function initGame(): void {
-
-    let outputDiv = document.getElementById('output');
-    outputDiv.innerHTML = '';
-
-    let userInput = getUserInput();
-
-    game = new Game(
-        userInput.height,
-        userInput.width,
-        userInput.speed
-    );
-
-    game.grid.randomise();
-    // game.grid.setPattern();
-    
-    outputDiv.append(buildTableHtml(game));
-    updateViewHtml(game);
-
+// Set input fields default values.
+function setDefaults(): void {
+    (<HTMLInputElement>document.getElementById('heightInput')).value = String(defaults.height);
+    (<HTMLInputElement>document.getElementById('widthInput')).value = String(defaults.width);
+    (<HTMLInputElement>document.getElementById('speedInput')).value = String(defaults.speed);
 }
 
-function getUserInput(): any {
+// Get settings from input fields.
+function getSettings(): any {
     
-    let userInput = {
+    let settings = {
         width: parseInt((<HTMLInputElement>document.getElementById('widthInput')).value),
         height: parseInt((<HTMLInputElement>document.getElementById('heightInput')).value),
         speed: parseInt((<HTMLInputElement>document.getElementById('speedInput')).value)
     };
     
-    return userInput;
+    return settings;
 }
 
+// Build <table> HTML.
 function buildTableHtml(game: Game): HTMLElement {
 
     let table = document.createElement('table');
@@ -62,7 +53,8 @@ function buildTableHtml(game: Game): HTMLElement {
     return table;
 }
 
-function updateViewHtml(game: Game): void {
+// Update <table> cells with live or dead class name.
+function updateViewHtml(): void {
     
     for (let r = 0; r < game.grid.height; r++) {
 
@@ -77,31 +69,66 @@ function updateViewHtml(game: Game): void {
 
 }
 
-export function pauseGame(): void {
-    clearInterval(iterate);
+// Initialise game with settings from the view and output starting <table> HTML.
+export function initGame(): void {
+
+    let outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '';
+
+    let settings = getSettings();
+
+    game = new Game(settings.height, settings.width, settings.speed, 0);
+    
+    outputDiv.append(buildTableHtml(game));
+    updateViewHtml();
+
 }
 
+// Begin game iterations, updating <table> cells for each iteration.
 export function playGame(): void {
 
-    iterate = setInterval(() => {
+    if (!gameInProgress) {
+        iterate = setInterval(() => {
 
-        if (game.currentIteration < game.maxIterations) {
-            updateViewHtml(game);
-            game.nextIteration();
-            game.currentIteration++;
-        }
-        else {
-            pauseGame();
-        }
+            if (game.currentIteration < game.maxIterations) {
+                game.nextIteration();
+                game.currentIteration++;
+                updateViewHtml();
+            }
+            else {
+                stopGame();
+            }
 
-    }, game.speed);
+        }, game.speed);
+
+        gameInProgress = true;
+    }
 
 }
 
-export function resetGame(): void {
-
+// Stop/pause the game.
+export function stopGame(): void {
+    gameInProgress = false;
     clearInterval(iterate);
-    game.currentIteration = 0;
+}
+
+// Reset everything to default state with new random grid.
+export function resetGame(): void {
+    stopGame();
+    setDefaults();
     initGame();
+}
+
+// Apply changes in game settings.
+export function applyChanges(): void {
+
+    if (gameInProgress) {
+        stopGame();
+        initGame();
+        playGame();
+    }
+    else {
+        initGame();
+    }
     
 }

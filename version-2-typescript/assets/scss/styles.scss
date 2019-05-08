@@ -1,22 +1,19 @@
-body {
-    background-color: #00565e;
-    color: #97c2c6;
-    font-family: 'Rubik', sans-serif;
-}
+@import 'variables.scss';
+@import 'game-controls.scss';
+@import 'game-grid.scss';
 
-.game-table {
-    background-color: #00565e;
-    border-collapse: collapse;
-}
-
-.game-table td {
-    border: 2px solid #00565e;
+* {
     box-sizing: border-box;
-    height: 8px;
-    padding: 0;
-    width: 8px;
 }
 
-.live {
-    background-color: #00eaff;
+body, html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: $background-color;
+    color: $text-color;
+    font: 13px/18px 'Rubik', sans-serif;
+    margin: 0;
 }

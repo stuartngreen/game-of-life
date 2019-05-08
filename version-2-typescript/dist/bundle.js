@@ -14,28 +14,27 @@ exports.Cell = Cell;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const game_1 = require("./models/game");
+let defaults = { height: 85, width: 125, speed: 100 };
 let game;
 let iterate;
+let gameInProgress = false;
 function main() {
+    setDefaults();
     initGame();
 }
 exports.main = main;
-function initGame() {
-    let outputDiv = document.getElementById('output');
-    outputDiv.innerHTML = '';
-    let userInput = getUserInput();
-    game = new game_1.Game(userInput.height, userInput.width, userInput.speed);
-    game.grid.randomise();
-    outputDiv.append(buildTableHtml(game));
-    updateViewHtml(game);
+function setDefaults() {
+    document.getElementById('heightInput').value = String(defaults.height);
+    document.getElementById('widthInput').value = String(defaults.width);
+    document.getElementById('speedInput').value = String(defaults.speed);
 }
-function getUserInput() {
-    let userInput = {
+function getSettings() {
+    let settings = {
         width: parseInt(document.getElementById('widthInput').value),
         height: parseInt(document.getElementById('heightInput').value),
         speed: parseInt(document.getElementById('speedInput').value)
     };
-    return userInput;
+    return settings;
 }
 function buildTableHtml(game) {
     let table = document.createElement('table');
@@ -51,7 +50,7 @@ function buildTableHtml(game) {
     }
     return table;
 }
-function updateViewHtml(game) {
+function updateViewHtml() {
     for (let r = 0; r < game.grid.height; r++) {
         for (let c = 0; c < game.grid.width; c++) {
             let cell = game.grid.getCell(r, c);
@@ -60,39 +59,63 @@ function updateViewHtml(game) {
         }
     }
 }
-function pauseGame() {
-    clearInterval(iterate);
+function initGame() {
+    let outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '';
+    let settings = getSettings();
+    game = new game_1.Game(settings.height, settings.width, settings.speed, 0);
+    outputDiv.append(buildTableHtml(game));
+    updateViewHtml();
 }
-exports.pauseGame = pauseGame;
+exports.initGame = initGame;
 function playGame() {
-    iterate = setInterval(() => {
-        if (game.currentIteration < game.maxIterations) {
-            updateViewHtml(game);
-            game.nextIteration();
-            game.currentIteration++;
-        }
-        else {
-            pauseGame();
-        }
-    }, game.speed);
+    if (!gameInProgress) {
+        iterate = setInterval(() => {
+            if (game.currentIteration < game.maxIterations) {
+                game.nextIteration();
+                game.currentIteration++;
+                updateViewHtml();
+            }
+            else {
+                stopGame();
+            }
+        }, game.speed);
+        gameInProgress = true;
+    }
 }
 exports.playGame = playGame;
-function resetGame() {
+function stopGame() {
+    gameInProgress = false;
     clearInterval(iterate);
-    game.currentIteration = 0;
+}
+exports.stopGame = stopGame;
+function resetGame() {
+    stopGame();
+    setDefaults();
     initGame();
 }
 exports.resetGame = resetGame;
+function applyChanges() {
+    if (gameInProgress) {
+        stopGame();
+        initGame();
+        playGame();
+    }
+    else {
+        initGame();
+    }
+}
+exports.applyChanges = applyChanges;
 
 },{"./models/game":3}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const grid_1 = require("./grid");
 class Game {
-    constructor(height, width, speed = 50, maxIterations = Infinity, currentIteration = 0) {
+    constructor(height, width, speed = 50, currentIteration = 0, maxIterations = Infinity) {
         this.speed = speed;
-        this.maxIterations = maxIterations;
         this.currentIteration = currentIteration;
+        this.maxIterations = maxIterations;
         this.grid = new grid_1.Grid(height, width);
         this.nextGrid = new grid_1.Grid(height, width);
     }
@@ -137,7 +160,7 @@ exports.Game = Game;
 Object.defineProperty(exports, "__esModule", { value: true });
 const cell_1 = require("../entities/cell");
 class Grid {
-    constructor(height = 25, width = 25) {
+    constructor(height, width) {
         this.height = height;
         this.width = width;
         this.grid = [];
@@ -147,14 +170,7 @@ class Grid {
         for (let r = 0; r < this.height; r++) {
             this.grid[r] = [];
             for (let c = 0; c < this.width; c++) {
-                this.grid[r][c] = new cell_1.Cell(r, c);
-            }
-        }
-    }
-    randomise() {
-        for (let r = 0; r < this.height; r++) {
-            for (let c = 0; c < this.width; c++) {
-                this.grid[r][c].isAlive = Math.random() >= 0.5;
+                this.grid[r][c] = new cell_1.Cell(r, c, Math.random() >= 0.5);
             }
         }
     }

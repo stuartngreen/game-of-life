@@ -67,6 +67,8 @@ function updateViewHtml(): void {
         }
     }
 
+    (<HTMLInputElement>document.getElementById('currentIteration')).innerHTML = String(game.currentIteration);
+
 }
 
 // Initialise game with settings from the view and output starting <table> HTML.

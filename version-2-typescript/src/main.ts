@@ -1,7 +1,7 @@
 import { Cell } from './entities/cell';
 import { Game } from './models/game';
 
-let defaults = { height: 85, width: 125, speed: 100 };
+let defaults = { height: 65, width: 85, speed: 50 };
 let game: Game;
 let iterate: number;
 let gameInProgress = false;

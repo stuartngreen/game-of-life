@@ -19,7 +19,7 @@ describe('Game Tests', () => {
         game.grid.getCell(2, 1).isAlive = false;
         game.grid.getCell(2, 2).isAlive = true;
 
-        // Grid start state:
+        // Starting grid state:
         //   0 1 2
         // 0 x o x
         // 1 o o o
